@@ -1,0 +1,218 @@
+---
+title: "Run Cox proportional hazards regression on one continuous variable with quantile cutoff"
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+knitr::opts_chunk$set(warning = F, message = F)
+```
+
+```{r setup}
+library(cutsurv)
+library(tidyverse)
+library(survival)
+# library(skimr)
+```
+
+We will use HNSC data from the package for the examples below. To know more about HNSC data, refer to `?HNSC`
+
+```{r}
+data(HNSC)
+
+HNSC
+
+# skimr::skim(HNSC)
+```
+
+# Using single continous variable
+
+## User defined quantile cutoff(s) to group samples `run_coxph_1d`
+
+Here we use overall survival response to regress against the expression of *TNFRSF1B*, stratified by patient cancer grading.
+
+### With one cutoff
+
+Discretising patients by the median expression of *TNFRSF1B*, with higher than median group as baseline.
+
+```{r}
+res <- run_coxph_1d(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + strata(cancer_grading), input_data = HNSC, q_col="TNFRSF1B", q = 0.5)
+
+res[["test"]]
+```
+
+Result also returns discretized input data which contains all the variables in formula and can be used for other model fit in the future.
+
+```{r}
+res[["data"]]
+```
+
+### With both lower and upper quantile cutoff
+
+- Expression of *TNFRSF1B* can also be binned to lower than quantile `q` group and higher than quantile `q_2` group. 
+
+- We can also switch the baseline for regression. The default from above is "high".
+
+```{r}
+res <- run_coxph_1d(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + strata(cancer_grading), input_data = HNSC, q_col="TNFRSF1B", q = 0.4, q_2=0.6, baseline = "low")
+
+res[["test"]]
+```
+
+For more helps, `?run_coxph_1d`.
+
+## Scanning a gradient of quantile cutoff(s) to find optimal cutoff
+
+
+### With one cutoff
+
+`run_coxph_1d_optimal` performs Cox proportional hazards regression with multiple quantile cutoff values and returns the best test result, best data, best quantile cutoff, and a dataframe of the quantile cutoffs ranked by the selected p-value type.
+
+- The cutoff gradient can be defined by `low_q`, `high_q` and `breaks` or `by`, very similarly to `{seq}` function. 
+- The best cutoff are selected by choosing threshold with the lowest model p-value. There are several types of p-value for ranking. `"log"` means likelihood ratio p-value, `"sc"` means log rank score test p-value, and `"wald"` means wald test p-value. Default is `"log"`
+- After discretion, the groups with lower than `min_group_size` will be removed from regression.
+- Like `run_coxph_1d`, we can also choose `baseline` for the group level.
+
+```{r}
+res <- run_coxph_1d_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B, input_data = HNSC, q_col="TNFRSF1B", by = 0.1)
+```
+
+The result include 4 parts:
+
+- "best_test": The coxph test object with the lowest p-value.
+- "best_data": The data frame used to fit the best test.
+- "best_q": The quantile cutoff value that produced the best test.
+- "rank_q": A data frame with the ranked quantile cutoff values and their corresponding p-values for the selected p-value type.
+
+```{r}
+res[["best_test"]]
+res[["best_q"]]
+res[["rank_q"]]
+```
+
+To learn more, `?run_coxph_1d_optimal`.
+
+### With both lower and upper quantile cutoff
+
+`run_coxph_1d2b_optimal` is similar to `run_coxph_1d_optimal` but with both lower `q` and upper `q_2` quantile cutoffs to group samples. All other parameters are the same with 2 additional parameters.
+
+
+- Method for generating the search space for optimal cutoff values. Inspired from cSurvival paper[^1], there are two methods included: "median-anchored" and "exhaustive".
+
+> (i) Median-anchored greedy search: we construct a 2D grid using percentiles of both predictors. Next, we determine the starting point for a greedy search by locating the minimum P-value computed from testing each percentile in predictor B against the median percentile in predictor A. Then, we test the nearest three unexplored points; if a lower P-value is found, we move the search to that newly found minimum P-value point and test the nearest unexplored points until no lower P-value can be found.
+
+> (ii) Exhaustive search: We construct a 2D grid using percentiles of both predictors. Next, we determine the optimal percentile combination by locating the minimum P-value computed from testing each percentile in predictor B against each percentile in predictor A. 
+
+- set_n: The number of quantitle combinations closest to the previous set of cutoff generating lowest p-value for the median-anchored method. Default is 3.
+
+[^1]: Xuanjin Cheng, Yongxing Liu, Jiahe Wang, Yujie Chen, Andrew Gordon Robertson, Xuekui Zhang, Steven J M Jones, Stefan Taubert, cSurvival: a web resource for biomarker interactions in cancer outcomes and in cell lines, Briefings in Bioinformatics, Volume 23, Issue 3, May 2022, bbac090, https://doi.org/10.1093/bib/bbac090
+
+
+```{r}
+res <- run_coxph_1d2b_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B, input_data = HNSC, q_col="TNFRSF1B", low_q = 0.2, high_q = 0.8,by = 0.1)
+```
+
+```{r}
+res[["best_test"]]
+res[["best_q"]]
+res[["rank_q"]]
+```
+
+For more information, `?run_coxph_1d2b_optimal`.
+
+# Using two continous variable
+
+## User defined quantile cutoff(s) to group samples `run_coxph_2d`
+
+Here we use overall survival response to regress against the expression of *TNFRSF1B* and the GSVA enrichment score of Treg `"t_nk_cell:Treg"`, stratified by patient cancer grading and gender.
+
+### With one cutoff
+
+Discretising patients by the median expression of *TNFRSF1B* and median enrichment score, with higher than median group as baseline. It will group samples into 4 groups: "high:high", "high:low", "low:high", "low:low".
+
+```{r}
+res <- run_coxph_2d(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + `t_nk_cell:Treg` + strata(cancer_grading, gender), input_data = HNSC, q1_col="TNFRSF1B", q2_col = "t_nk_cell:Treg", q1=0.5, q2 = 0.5)
+
+res[["test"]]
+```
+
+Same as `run_coxph_1d`, result also returns discretized input data which contains all the variables in formula and can be used for other model fit in the future.
+
+```{r}
+res[["data"]]
+```
+
+We can also combine some groups into one, so that instead of regressing against 4 groups, we only interested in whether either TNFR2 low and Treg high enrichment will result in poor prognosis. Thus, "high:low", "low:low", "high:high" will be integrated into one group `"other"`.
+
+```{r}
+res <- run_coxph_2d(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + `t_nk_cell:Treg` + strata(cancer_grading, gender), input_data = HNSC, q1_col="TNFRSF1B", q2_col = "t_nk_cell:Treg", q1=0.5, q2 = 0.5, combine_group = c("high:low", "low:low", "high:high"))
+
+res[["test"]]
+```
+
+### With both lower and upper quantile cutoff
+
+Same as `run_coxph_1d`, both variables can also be binned to lower than quantile `q1` and/or `q2` and higher than quantile `q1_2` and/or `q2_2`.
+
+
+```{r}
+res <- run_coxph_2d(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + `t_nk_cell:Treg` + strata(cancer_grading, gender), input_data = HNSC, q1_col="TNFRSF1B", q2_col = "t_nk_cell:Treg", q1=0.4, q1_2 = 0.6, q2 = 0.5)
+
+res[["test"]]
+```
+
+For more helps, `?run_coxph_2d`.
+
+## Scanning a gradient of quantile cutoff(s) to find optimal cutoff
+
+`run_coxph_2d_optimal` and `run_coxph_2d2d_optimal` perform coxph survival analysis by converting two continuous variables to categorical variables with optimal quantile cutoffs. The optimal cutoffs are determined by exhaustively searching or using median-anchored method. The optimal cutoffs are determined by minimizing the p-value of the score test of the Cox proportional hazards model.
+
+### With one cutoff
+
+`run_coxph_2d_optimal` is to search combination of `q1` and `q2` for both variables. `q1` and `q2` separate var1 and var2 into two groups respectively. It is flexible with all the parameters defined in `run_coxph_1d_optimal` seen above, but search 2-dimensional space.
+
+Below is the example to evaluate, comparing to both TNFR2 and Treg enrichment high,  whether single high or both low result in poor or better prognosis using "median-anchored" to search the optimal pair of `q1` and `q2` cutoff.
+
+```{r}
+res <- run_coxph_2d_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + `t_nk_cell:Treg` + strata(cancer_grading), input_data = HNSC, q1_col="TNFRSF1B", q2_col = "t_nk_cell:Treg", by=0.1, combine_group = c("low:high", "high:low"), baseline="high:high", set_n = 5)
+```
+
+
+```{r}
+res[["best_test"]]
+res[["best_q"]]
+res[["rank_q"]]
+```
+
+For more information, `?run_coxph_2d_optimal`
+
+### With both lower and upper quantile cutoff
+
+Same as `run_coxph_1d2b_optimal`, `run_coxph_2d2b_optimal` search the combination of `q1`, `q2`, `q1_2` and `q2_2`, binning samples by lower and upper quantile cutoff.
+
+Below is the example same as above, but with lower and upper quantile cutoffs.
+
+```{r}
+res <- run_coxph_2d2b_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + `t_nk_cell:Treg` + strata(cancer_grading), input_data = HNSC, q1_col="TNFRSF1B", q2_col = "t_nk_cell:Treg", by=0.1, combine_group = c("low:high", "high:low"), baseline="high:high", set_n = 5)
+```
+
+# Extract TCGA clinical and omics data from cBioPortal
+
+```{r}
+get_tcga(tumor_type="BRCA") # get clinical
+```
+
+Get gene expression for *BRCA1* and *BRCA2*.
+
+```{r}
+get_tcga(tumor_type="BRCA", gene_names=c("BRCA1", "BRCA2"), type="expression")
+```
+
+For more information, `?get_tcga`

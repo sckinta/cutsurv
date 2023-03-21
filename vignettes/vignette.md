@@ -2,46 +2,49 @@ Run Cox proportional hazards regression on one continuous variable with
 quantile cutoff
 ================
 
-- <a href="#using-single-continous-variable"
-  id="toc-using-single-continous-variable">Using single continous
-  variable</a>
-  - <a href="#user-defined-quantile-cutoffs-to-group-samples-run_coxph_1d"
-    id="toc-user-defined-quantile-cutoffs-to-group-samples-run_coxph_1d">User
-    defined quantile cutoff(s) to group samples
-    <code>run_coxph_1d</code></a>
-    - <a href="#with-one-cutoff" id="toc-with-one-cutoff">With one cutoff</a>
-    - <a href="#with-both-lower-and-upper-quantile-cutoff"
-      id="toc-with-both-lower-and-upper-quantile-cutoff">With both lower and
-      upper quantile cutoff</a>
-  - <a
-    href="#scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff"
-    id="toc-scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff">Scanning
-    a gradient of quantile cutoff(s) to find optimal cutoff</a>
-    - <a href="#with-one-cutoff-1" id="toc-with-one-cutoff-1">With one
-      cutoff</a>
-    - <a href="#with-both-lower-and-upper-quantile-cutoff-1"
-      id="toc-with-both-lower-and-upper-quantile-cutoff-1">With both lower and
-      upper quantile cutoff</a>
-- <a href="#using-two-continous-variable"
-  id="toc-using-two-continous-variable">Using two continous variable</a>
-  - <a href="#user-defined-quantile-cutoffs-to-group-samples-run_coxph_2d"
-    id="toc-user-defined-quantile-cutoffs-to-group-samples-run_coxph_2d">User
-    defined quantile cutoff(s) to group samples
-    <code>run_coxph_2d</code></a>
-    - <a href="#with-one-cutoff-2" id="toc-with-one-cutoff-2">With one
-      cutoff</a>
-    - <a href="#with-both-lower-and-upper-quantile-cutoff-2"
-      id="toc-with-both-lower-and-upper-quantile-cutoff-2">With both lower and
-      upper quantile cutoff</a>
-  - <a
-    href="#scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff-1"
-    id="toc-scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff-1">Scanning
-    a gradient of quantile cutoff(s) to find optimal cutoff</a>
-    - <a href="#with-one-cutoff-3" id="toc-with-one-cutoff-3">With one
-      cutoff</a>
-    - <a href="#with-both-lower-and-upper-quantile-cutoff-3"
-      id="toc-with-both-lower-and-upper-quantile-cutoff-3">With both lower and
-      upper quantile cutoff</a>
+-   <a href="#using-single-continous-variable"
+    id="toc-using-single-continous-variable">Using single continous
+    variable</a>
+    -   <a href="#user-defined-quantile-cutoffs-to-group-samples-run_coxph_1d"
+        id="toc-user-defined-quantile-cutoffs-to-group-samples-run_coxph_1d">User
+        defined quantile cutoff(s) to group samples
+        <code>run_coxph_1d</code></a>
+        -   <a href="#with-one-cutoff" id="toc-with-one-cutoff">With one cutoff</a>
+        -   <a href="#with-both-lower-and-upper-quantile-cutoff"
+            id="toc-with-both-lower-and-upper-quantile-cutoff">With both lower and
+            upper quantile cutoff</a>
+    -   <a
+        href="#scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff"
+        id="toc-scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff">Scanning
+        a gradient of quantile cutoff(s) to find optimal cutoff</a>
+        -   <a href="#with-one-cutoff-1" id="toc-with-one-cutoff-1">With one
+            cutoff</a>
+        -   <a href="#with-both-lower-and-upper-quantile-cutoff-1"
+            id="toc-with-both-lower-and-upper-quantile-cutoff-1">With both lower and
+            upper quantile cutoff</a>
+-   <a href="#using-two-continous-variable"
+    id="toc-using-two-continous-variable">Using two continous variable</a>
+    -   <a href="#user-defined-quantile-cutoffs-to-group-samples-run_coxph_2d"
+        id="toc-user-defined-quantile-cutoffs-to-group-samples-run_coxph_2d">User
+        defined quantile cutoff(s) to group samples
+        <code>run_coxph_2d</code></a>
+        -   <a href="#with-one-cutoff-2" id="toc-with-one-cutoff-2">With one
+            cutoff</a>
+        -   <a href="#with-both-lower-and-upper-quantile-cutoff-2"
+            id="toc-with-both-lower-and-upper-quantile-cutoff-2">With both lower and
+            upper quantile cutoff</a>
+    -   <a
+        href="#scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff-1"
+        id="toc-scanning-a-gradient-of-quantile-cutoffs-to-find-optimal-cutoff-1">Scanning
+        a gradient of quantile cutoff(s) to find optimal cutoff</a>
+        -   <a href="#with-one-cutoff-3" id="toc-with-one-cutoff-3">With one
+            cutoff</a>
+        -   <a href="#with-both-lower-and-upper-quantile-cutoff-3"
+            id="toc-with-both-lower-and-upper-quantile-cutoff-3">With both lower and
+            upper quantile cutoff</a>
+-   <a href="#extract-tcga-clinical-and-omics-data-from-cbioportal"
+    id="toc-extract-tcga-clinical-and-omics-data-from-cbioportal">Extract
+    TCGA clinical and omics data from cBioPortal</a>
 
 ``` r
 library(cutsurv)
@@ -58,25 +61,26 @@ data(HNSC)
 
 HNSC
 #> # A tibble: 502 × 23
-#>    sample_id        subject_id   tumor_type sample_type  age_at_diagnosi… gender race 
-#>    <chr>            <chr>        <chr>      <chr>                   <dbl> <chr>  <chr>
-#>  1 TCGA-4P-AA8J-01A TCGA-4P-AA8J HNSC       Primary Tum…               66 male   Blac…
-#>  2 TCGA-BA-4074-01A TCGA-BA-4074 HNSC       Primary Tum…               69 male   White
-#>  3 TCGA-BA-4075-01A TCGA-BA-4075 HNSC       Primary Tum…               49 male   Blac…
-#>  4 TCGA-BA-4076-01A TCGA-BA-4076 HNSC       Primary Tum…               39 male   White
-#>  5 TCGA-BA-4077-01B TCGA-BA-4077 HNSC       Primary Tum…               45 female White
-#>  6 TCGA-BA-4078-01A TCGA-BA-4078 HNSC       Primary Tum…               83 male   White
-#>  7 TCGA-BA-5151-01A TCGA-BA-5151 HNSC       Primary Tum…               72 male   White
-#>  8 TCGA-BA-5152-01A TCGA-BA-5152 HNSC       Primary Tum…               56 male   White
-#>  9 TCGA-BA-5153-01A TCGA-BA-5153 HNSC       Primary Tum…               51 male   White
-#> 10 TCGA-BA-5555-01A TCGA-BA-5555 HNSC       Primary Tum…               54 male   Blac…
-#> # … with 492 more rows, and 16 more variables: SURVIVAL_os_days <dbl>,
-#> #   SURVIVAL_os_event <dbl>, SURVIVAL_pfi_days <dbl>, SURVIVAL_pfi_event <dbl>,
-#> #   cancer_grading <chr>, tnm_stage_pathologic_overall_stage <chr>, TNFRSF1B <dbl>,
-#> #   `t_nk_cell:CD4+ T` <dbl>, `t_nk_cell:CD8+ T` <dbl>, `t_nk_cell:Treg` <dbl>,
-#> #   `t_nk_cell:Cytotoxic` <dbl>, `t_nk_cell:NK` <dbl>, `t_nk_cell:Exhausted` <dbl>,
-#> #   `myeloid:Anti-inflammatory` <dbl>, `myeloid:Pro-inflammatory` <dbl>,
-#> #   subtype <chr>
+#>    sample_id   subje…¹ tumor…² sampl…³ age_a…⁴ gender race  SURVI…⁵ SURVI…⁶ SURVI…⁷
+#>    <chr>       <chr>   <chr>   <chr>     <dbl> <chr>  <chr>   <dbl>   <dbl>   <dbl>
+#>  1 TCGA-4P-AA… TCGA-4… HNSC    Primar…      66 male   Blac…     102       0     102
+#>  2 TCGA-BA-40… TCGA-B… HNSC    Primar…      69 male   White     462       1     396
+#>  3 TCGA-BA-40… TCGA-B… HNSC    Primar…      49 male   Blac…     283       1     236
+#>  4 TCGA-BA-40… TCGA-B… HNSC    Primar…      39 male   White     415       1     286
+#>  5 TCGA-BA-40… TCGA-B… HNSC    Primar…      45 female White    1134       1    1134
+#>  6 TCGA-BA-40… TCGA-B… HNSC    Primar…      83 male   White     276       1     276
+#>  7 TCGA-BA-51… TCGA-B… HNSC    Primar…      72 male   White     722       0     517
+#>  8 TCGA-BA-51… TCGA-B… HNSC    Primar…      56 male   White    1288       0    1288
+#>  9 TCGA-BA-51… TCGA-B… HNSC    Primar…      51 male   White    1762       1    1522
+#> 10 TCGA-BA-55… TCGA-B… HNSC    Primar…      54 male   Blac…     520       0     248
+#> # … with 492 more rows, 13 more variables: SURVIVAL_pfi_event <dbl>,
+#> #   cancer_grading <chr>, tnm_stage_pathologic_overall_stage <chr>,
+#> #   TNFRSF1B <dbl>, `t_nk_cell:CD4+ T` <dbl>, `t_nk_cell:CD8+ T` <dbl>,
+#> #   `t_nk_cell:Treg` <dbl>, `t_nk_cell:Cytotoxic` <dbl>, `t_nk_cell:NK` <dbl>,
+#> #   `t_nk_cell:Exhausted` <dbl>, `myeloid:Anti-inflammatory` <dbl>,
+#> #   `myeloid:Pro-inflammatory` <dbl>, subtype <chr>, and abbreviated variable
+#> #   names ¹​subject_id, ²​tumor_type, ³​sample_type, ⁴​age_at_diagnosis_years, …
+#> # ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
 
 # skimr::skim(HNSC)
 ```
@@ -126,15 +130,16 @@ res[["data"]]
 #>  9             1762                 1     4.74 G2             high 
 #> 10              520                 0     3.17 G2             low  
 #> # … with 488 more rows
+#> # ℹ Use `print(n = ...)` to see more rows
 ```
 
 ### With both lower and upper quantile cutoff
 
-- Expression of *TNFRSF1B* can also be binned to lower than quantile `q`
-  group and higher than quantile `q_2` group.
+-   Expression of *TNFRSF1B* can also be binned to lower than quantile
+    `q` group and higher than quantile `q_2` group.
 
-- We can also switch the baseline for regression. The default from above
-  is “high”.
+-   We can also switch the baseline for regression. The default from
+    above is “high”.
 
 ``` r
 res <- run_coxph_1d(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + strata(cancer_grading), input_data = HNSC, q_col="TNFRSF1B", q = 0.4, q_2=0.6, baseline = "low")
@@ -161,16 +166,17 @@ multiple quantile cutoff values and returns the best test result, best
 data, best quantile cutoff, and a dataframe of the quantile cutoffs
 ranked by the selected p-value type.
 
-- The cutoff gradient can be defined by `low_q`, `high_q` and `breaks`
-  or `by`, very similarly to `{seq}` function.
-- The best cutoff are selected by choosing threshold with the lowest
-  model p-value. There are several types of p-value for ranking. `"log"`
-  means likelihood ratio p-value, `"sc"` means log rank score test
-  p-value, and `"wald"` means wald test p-value. Default is `"log"`
-- After discretion, the groups with lower than `min_group_size` will be
-  removed from regression.
-- Like `run_coxph_1d`, we can also choose `baseline` for the group
-  level.
+-   The cutoff gradient can be defined by `low_q`, `high_q` and `breaks`
+    or `by`, very similarly to `{seq}` function.
+-   The best cutoff are selected by choosing threshold with the lowest
+    model p-value. There are several types of p-value for ranking.
+    `"log"` means likelihood ratio p-value, `"sc"` means log rank score
+    test p-value, and `"wald"` means wald test p-value. Default is
+    `"log"`
+-   After discretion, the groups with lower than `min_group_size` will
+    be removed from regression.
+-   Like `run_coxph_1d`, we can also choose `baseline` for the group
+    level.
 
 ``` r
 res <- run_coxph_1d_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B, input_data = HNSC, q_col="TNFRSF1B", by = 0.1)
@@ -178,11 +184,11 @@ res <- run_coxph_1d_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ 
 
 The result include 4 parts:
 
-- “best_test”: The coxph test object with the lowest p-value.
-- “best_data”: The data frame used to fit the best test.
-- “best_q”: The quantile cutoff value that produced the best test.
-- “rank_q”: A data frame with the ranked quantile cutoff values and
-  their corresponding p-values for the selected p-value type.
+-   “best_test”: The coxph test object with the lowest p-value.
+-   “best_data”: The data frame used to fit the best test.
+-   “best_q”: The quantile cutoff value that produced the best test.
+-   “rank_q”: A data frame with the ranked quantile cutoff values and
+    their corresponding p-values for the selected p-value type.
 
 ``` r
 res[["best_test"]]
@@ -218,9 +224,9 @@ To learn more, `?run_coxph_1d_optimal`.
 both lower `q` and upper `q_2` quantile cutoffs to group samples. All
 other parameters are the same with 2 additional parameters.
 
-- Method for generating the search space for optimal cutoff values.
-  Inspired from cSurvival paper[^1], there are two methods included:
-  “median-anchored” and “exhaustive”.
+-   Method for generating the search space for optimal cutoff values.
+    Inspired from cSurvival paper[^1], there are two methods included:
+    “median-anchored” and “exhaustive”.
 
 > 1)  Median-anchored greedy search: we construct a 2D grid using
 >     percentiles of both predictors. Next, we determine the starting
@@ -237,9 +243,9 @@ other parameters are the same with 2 additional parameters.
 >     each percentile in predictor B against each percentile in
 >     predictor A.
 
-- set_n: The number of quantitle combinations closest to the previous
-  set of cutoff generating lowest p-value for the median-anchored
-  method. Default is 3.
+-   set_n: The number of quantitle combinations closest to the previous
+    set of cutoff generating lowest p-value for the median-anchored
+    method. Default is 3.
 
 ``` r
 res <- run_coxph_1d2b_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B, input_data = HNSC, q_col="TNFRSF1B", low_q = 0.2, high_q = 0.8,by = 0.1)
@@ -320,19 +326,21 @@ fit in the future.
 ``` r
 res[["data"]]
 #> # A tibble: 498 × 7
-#>    SURVIVAL_os_days SURVIVAL_os_event TNFRSF1B `t_nk_cell:Treg` cancer_grading gender
-#>               <dbl>             <dbl>    <dbl>            <dbl> <chr>          <chr> 
-#>  1              102                 0     3.61            0.665 G2             male  
-#>  2              462                 1     1.68            0.540 G3             male  
-#>  3              283                 1     1.87            0.274 G2             male  
-#>  4              415                 1     1.81            0.596 G2             male  
-#>  5             1134                 1     3.88            0.803 G2             female
-#>  6              276                 1     2.74            0.641 G2             male  
-#>  7              722                 0     3.51            0.666 G1             male  
-#>  8             1288                 0     4.41            0.760 G2             male  
-#>  9             1762                 1     4.74            0.554 G2             male  
-#> 10              520                 0     3.17            0.607 G2             male  
-#> # … with 488 more rows, and 1 more variable: group <fct>
+#>    SURVIVAL_os_days SURVIVAL_os_event TNFRSF1B t_nk_cell:Tre…¹ cance…² gender group
+#>               <dbl>             <dbl>    <dbl>           <dbl> <chr>   <chr>  <fct>
+#>  1              102                 0     3.61           0.665 G2      male   high…
+#>  2              462                 1     1.68           0.540 G3      male   low:…
+#>  3              283                 1     1.87           0.274 G2      male   low:…
+#>  4              415                 1     1.81           0.596 G2      male   low:…
+#>  5             1134                 1     3.88           0.803 G2      female high…
+#>  6              276                 1     2.74           0.641 G2      male   low:…
+#>  7              722                 0     3.51           0.666 G1      male   high…
+#>  8             1288                 0     4.41           0.760 G2      male   high…
+#>  9             1762                 1     4.74           0.554 G2      male   high…
+#> 10              520                 0     3.17           0.607 G2      male   low:…
+#> # … with 488 more rows, and abbreviated variable names ¹​`t_nk_cell:Treg`,
+#> #   ²​cancer_grading
+#> # ℹ Use `print(n = ...)` to see more rows
 ```
 
 We can also combine some groups into one, so that instead of regressing
@@ -448,6 +456,52 @@ cutoffs.
 ``` r
 res <- run_coxph_2d2b_optimal(formula=Surv(SURVIVAL_os_days, SURVIVAL_os_event) ~ TNFRSF1B + `t_nk_cell:Treg` + strata(cancer_grading), input_data = HNSC, q1_col="TNFRSF1B", q2_col = "t_nk_cell:Treg", by=0.1, combine_group = c("low:high", "high:low"), baseline="high:high", set_n = 5)
 ```
+
+# Extract TCGA clinical and omics data from cBioPortal
+
+``` r
+get_tcga(tumor_type="BRCA") # get clinical
+#> # A tibble: 1,108 × 8
+#>    patient_id   sample_type sample_id       os_months os_status  age   race  sex   
+#>    <chr>        <chr>       <chr>           <chr>     <chr>      <chr> <chr> <chr> 
+#>  1 TCGA-AR-A1AR Primary     TCGA-AR-A1AR-01 17.21     1:DECEASED 50    WHITE Female
+#>  2 TCGA-BH-A1EO Primary     TCGA-BH-A1EO-01 91.92     1:DECEASED 68    WHITE Female
+#>  3 TCGA-BH-A1ES Primary     TCGA-BH-A1ES-01 113.73    1:DECEASED 35    WHITE Female
+#>  4 TCGA-BH-A1ES Metastasis  TCGA-BH-A1ES-06 113.73    1:DECEASED 35    WHITE Female
+#>  5 TCGA-BH-A1ET Primary     TCGA-BH-A1ET-01 82.79     1:DECEASED 55    WHITE Female
+#>  6 TCGA-BH-A1EU Primary     TCGA-BH-A1EU-01 42.25     1:DECEASED 83    WHITE Female
+#>  7 TCGA-BH-A1EV Primary     TCGA-BH-A1EV-01 11.99     1:DECEASED 45    WHITE Female
+#>  8 TCGA-BH-A1EW Primary     TCGA-BH-A1EW-01 55.65     1:DECEASED 38    WHITE Female
+#>  9 TCGA-BH-A1F0 Primary     TCGA-BH-A1F0-01 25.79     1:DECEASED 80    WHITE Female
+#> 10 TCGA-C8-A1HF Primary     TCGA-C8-A1HF-01 10.91     0:LIVING   48    ASIAN Female
+#> # … with 1,098 more rows
+#> # ℹ Use `print(n = ...)` to see more rows
+```
+
+Get gene expression for *BRCA1* and *BRCA2*.
+
+``` r
+get_tcga(tumor_type="BRCA", gene_names=c("BRCA1", "BRCA2"), type="expression")
+#> # A tibble: 2,200 × 10
+#>    uniqueSamp…¹ uniqu…² entre…³ molec…⁴ sampl…⁵ patie…⁶ studyId value hugoG…⁷ type 
+#>    <chr>        <chr>     <int> <chr>   <chr>   <chr>   <chr>   <dbl> <chr>   <chr>
+#>  1 VENHQS0zQy1… VENHQS…     672 brca_t… TCGA-3… TCGA-3… brca_t…  831. BRCA1   prot…
+#>  2 VENHQS0zQy1… VENHQS…     675 brca_t… TCGA-3… TCGA-3… brca_t…  179. BRCA2   prot…
+#>  3 VENHQS0zQy1… VENHQS…     672 brca_t… TCGA-3… TCGA-3… brca_t…  390. BRCA1   prot…
+#>  4 VENHQS0zQy1… VENHQS…     675 brca_t… TCGA-3… TCGA-3… brca_t…  154. BRCA2   prot…
+#>  5 VENHQS0zQy1… VENHQS…     672 brca_t… TCGA-3… TCGA-3… brca_t…  200. BRCA1   prot…
+#>  6 VENHQS0zQy1… VENHQS…     675 brca_t… TCGA-3… TCGA-3… brca_t…  151. BRCA2   prot…
+#>  7 VENHQS0zQy1… VENHQS…     672 brca_t… TCGA-3… TCGA-3… brca_t…  148. BRCA1   prot…
+#>  8 VENHQS0zQy1… VENHQS…     675 brca_t… TCGA-3… TCGA-3… brca_t…  102. BRCA2   prot…
+#>  9 VENHQS00SC1… VENHQS…     672 brca_t… TCGA-4… TCGA-4… brca_t…  376. BRCA1   prot…
+#> 10 VENHQS00SC1… VENHQS…     675 brca_t… TCGA-4… TCGA-4… brca_t…  129. BRCA2   prot…
+#> # … with 2,190 more rows, and abbreviated variable names ¹​uniqueSampleKey,
+#> #   ²​uniquePatientKey, ³​entrezGeneId, ⁴​molecularProfileId, ⁵​sampleId, ⁶​patientId,
+#> #   ⁷​hugoGeneSymbol
+#> # ℹ Use `print(n = ...)` to see more rows
+```
+
+For more information, `?get_tcga`
 
 [^1]: Xuanjin Cheng, Yongxing Liu, Jiahe Wang, Yujie Chen, Andrew Gordon
     Robertson, Xuekui Zhang, Steven J M Jones, Stefan Taubert,
